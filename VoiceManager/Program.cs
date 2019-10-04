@@ -10,7 +10,6 @@ namespace VoiceManager
     {
         public static Configuration Config;
         private DiscordSocketClient _client;
-
         public Program(string[] args)
         {
             var configPath = args.Length > 0 ? args[1] : "config.json";
@@ -30,8 +29,12 @@ namespace VoiceManager
             await _client.LoginAsync(TokenType.Bot, Config.Token);
             await _client.StartAsync();
             _client.UserVoiceStateUpdated += UserVoiceStateUpdated;
-            await Task.Delay(-1);
+            var handler = new CommandHandler(_client, new Discord.Commands.CommandService());
+            await handler.InstallCommandsAsync();
+            await Task.Delay(-1);   
         }
+
+
 
         private async Task UserVoiceStateUpdated(SocketUser user, SocketVoiceState before, SocketVoiceState after)
         {
