@@ -66,6 +66,8 @@ namespace TimSarcasm
                         {
                             await guildUser.AddRoleAsync(guild.GetRole(Config.SpamRoleId));
                             await Log(new LogMessage(LogSeverity.Warning, "ChannelMaker", "Giving spamrole to " + name + " for spamming VC creation"));
+                            await removeOldVc(before);
+                            await guildUser.ModifyAsync(vcUser => { vcUser.Channel = null; });
                             return;
                         }
                         spamProtectionCountDictionary[guildUser] = 0;
@@ -93,7 +95,12 @@ namespace TimSarcasm
                     vcUser.Channel = newVoiceChannel;
                 });
             }
+            
+            await removeOldVc(before);
+        }
 
+        private async Task removeOldVc(SocketVoiceState before)
+        {
             if (before.VoiceChannel != null && 
                 before.VoiceChannel.Users.Count == 0 && 
                 before.VoiceChannel.CategoryId == Config.VoiceChannelCategory && 
