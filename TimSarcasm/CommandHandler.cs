@@ -30,8 +30,8 @@ namespace TimSarcasm
             int argPos = 0;
             if (!(
                 message.HasMentionPrefix(_client.CurrentUser, ref argPos) ||
-                message.HasCharPrefix('~', ref argPos) ||
-                message.Author.IsBot))
+                message.HasCharPrefix('~', ref argPos)) ||
+                message.Author.IsBot)
                 return;
             var context = new SocketCommandContext(_client, message);
             var result = await _commands.ExecuteAsync(
