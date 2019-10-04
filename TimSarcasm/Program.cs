@@ -1,6 +1,7 @@
 ﻿using Discord;
 using Discord.WebSocket;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 
@@ -10,6 +11,9 @@ namespace TimSarcasm
     {
         public static Configuration Config;
         private DiscordSocketClient _client;
+        private Dictionary<SocketGuildUser, long> spamProtectionDictionary = new Dictionary<SocketGuildUser, long>();
+        private Dictionary<SocketGuildUser, int> spamProtectionCountDictionary = new Dictionary<SocketGuildUser, int>();
+        
         public Program(string[] args)
         {
             var configPath = args.Length > 0 ? args[1] : "config.json";
@@ -54,6 +58,31 @@ namespace TimSarcasm
 
             if (after.VoiceChannel != null && after.VoiceChannel.Id == Config.CreateVoiceChannelId)
             {
+                if (spamProtectionDictionary.ContainsKey(guildUser))
+                {
+                    if (spamProtectionCountDictionary[guildUser] > 4)
+                    {
+                        if (DateTimeOffset.Now.ToUnixTimeSeconds() - spamProtectionDictionary[guildUser] < 60)
+                        {
+                            await guildUser.AddRoleAsync(guild.GetRole(Config.SpamRoleId));
+                            await Log(new LogMessage(LogSeverity.Warning, "ChannelMaker", "Giving spamrole to " + name + " for spamming VC creation"));
+                            return;
+                        }
+                        spamProtectionCountDictionary[guildUser] = 0;
+                    }
+                }
+
+                spamProtectionDictionary[guildUser] = DateTimeOffset.Now.ToUnixTimeSeconds();
+                if (!spamProtectionCountDictionary.ContainsKey(guildUser))
+                {
+                    spamProtectionCountDictionary[guildUser] = 1;
+                }
+                else
+                {
+                    spamProtectionCountDictionary[guildUser]++;
+                }
+
+
                 await Log(new LogMessage(LogSeverity.Info, "ChannelMaker", "Creating VC for " + name));
                 var newVoiceChannel = await after.VoiceChannel.Guild.CreateVoiceChannelAsync(name + "'s Voice Chat", (properties) =>
                 {
