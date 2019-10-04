@@ -93,7 +93,12 @@ namespace TimSarcasm
                     vcUser.Channel = newVoiceChannel;
                 });
             }
+            
+            await removeOldVc(before);
+        }
 
+        private async Task removeOldVc(SocketVoiceState before)
+        {
             if (before.VoiceChannel != null && 
                 before.VoiceChannel.Users.Count == 0 && 
                 before.VoiceChannel.CategoryId == Config.VoiceChannelCategory && 
