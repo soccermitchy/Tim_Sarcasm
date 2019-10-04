@@ -23,29 +23,24 @@ namespace VoiceManager
         {
             _client.MessageReceived += HandleCommandsAsync;
             await _commands.AddModulesAsync(assembly: Assembly.GetEntryAssembly(), services: null);
-            foreach (var module in _commands.Modules)
-            {
-                Console.WriteLine("Found module: " + module.Name);
-                foreach (var cmd in module.Commands)
-                {
-                    Console.WriteLine("Command in " + module.Name + ": " + cmd.Name);
-                }
-            }
         }
         private async Task HandleCommandsAsync(SocketMessage messageParam)
         {
             if (!(messageParam is SocketUserMessage message)) return;
             int argPos = 0;
-            if (!message.HasCharPrefix('~', ref argPos))
+            //if (!)
+            if (!(
+                message.HasMentionPrefix(_client.CurrentUser, ref argPos) ||
+                message.HasCharPrefix('~', ref argPos) ||
+                message.Author.IsBot))
                 return;
-            Console.WriteLine("argument pos: " + argPos);
             var context = new SocketCommandContext(_client, message);
             var result = await _commands.ExecuteAsync(
                 context: context,
                 argPos: argPos,
                 services: null);
-            if (!result.IsSuccess)
-                Console.WriteLine(result.ErrorReason + " - " + context.Message.Content);
+            //if (!result.IsSuccess)
+                //await message.Channel.SendMessageAsync("Error: " + result.ErrorReason);
         }
     }
 }
