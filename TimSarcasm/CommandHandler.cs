@@ -28,7 +28,6 @@ namespace TimSarcasm
         {
             if (!(messageParam is SocketUserMessage message)) return;
             int argPos = 0;
-            //if (!)
             if (!(
                 message.HasMentionPrefix(_client.CurrentUser, ref argPos) ||
                 message.HasCharPrefix('~', ref argPos) ||
