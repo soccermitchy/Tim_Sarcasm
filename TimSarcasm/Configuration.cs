@@ -24,6 +24,9 @@ namespace TimSarcasm
         public ulong CreateVoiceChannelId { get; set; }
         [JsonProperty("voiceChannelCategory")]
         public ulong VoiceChannelCategory { get; set; }
+        
+        [JsonProperty("spamRole")]
+        public ulong SpamRoleId { get; set; }
 
     }
 
