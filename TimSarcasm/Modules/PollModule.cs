@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace VoiceManager.Modules
+namespace TimSarcasm.Modules
 {
     public class PollModule : ModuleBase<SocketCommandContext>
     {

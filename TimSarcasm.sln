@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29020.237
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VoiceManager", "VoiceManager\VoiceManager.csproj", "{82103D31-63C2-4BF6-B7B9-884BEE37B590}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TimSarcasm", "TimSarcasm\TimSarcasm.csproj", "{82103D31-63C2-4BF6-B7B9-884BEE37B590}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

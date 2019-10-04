@@ -6,7 +6,7 @@
 //
 //    var configuration = Configuration.FromJson(jsonString);
 
-namespace VoiceManager
+namespace TimSarcasm
 {
     using System;
     using System.Collections.Generic;
@@ -29,12 +29,12 @@ namespace VoiceManager
 
     public partial class Configuration
     {
-        public static Configuration FromJson(string json) => JsonConvert.DeserializeObject<Configuration>(json, VoiceManager.Converter.Settings);
+        public static Configuration FromJson(string json) => JsonConvert.DeserializeObject<Configuration>(json, TimSarcasm.Converter.Settings);
     }
 
     public static class Serialize
     {
-        public static string ToJson(this Configuration self) => JsonConvert.SerializeObject(self, VoiceManager.Converter.Settings);
+        public static string ToJson(this Configuration self) => JsonConvert.SerializeObject(self, TimSarcasm.Converter.Settings);
     }
 
     internal static class Converter
