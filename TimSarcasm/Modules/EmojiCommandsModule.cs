@@ -13,6 +13,7 @@ namespace TimSarcasm.Modules
         [Command("b"), Summary("b")]
         public async Task B()
         {
+            await Context.Message.DeleteAsync();
             await Context.Message.Channel.SendMessageAsync("🅱");
         }
     }
