@@ -10,8 +10,7 @@ namespace TimSarcasm.Modules
     [Name("Emoji"), Summary("Emoji commands.")]
     public class EmojiCommandsModule : ModuleBase<SocketCommandContext>
     {
-        [Command("b")]
-        [Summary("b")]
+        [Command("b"), Summary("b")]
         public async Task B()
         {
             await Context.Message.Channel.SendMessageAsync("🅱");

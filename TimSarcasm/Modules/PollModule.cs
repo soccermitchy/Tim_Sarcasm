@@ -10,13 +10,12 @@ namespace TimSarcasm.Modules
     [Name("Poll"), Summary("Creates polls.")]
     public class PollModule : ModuleBase<SocketCommandContext>
     {
-        [Command("poll")]
-        [Summary("Creates a new poll")]
-        public async Task Poll(params string[] words)
+        [Command("poll"), Summary("Creates a new poll")]
+        public async Task Poll(params string[] question)
         {
             await Context.Message.DeleteAsync();
-            var question = await Context.Message.Channel.SendMessageAsync("Poll from " + Context.Message.Author.Mention + ": " + String.Join(' ', words));
-            await question.AddReactionsAsync(new[] { new Emoji("👍"), new Emoji("😐"), new Emoji("👎") });
+            var message = await Context.Message.Channel.SendMessageAsync("Poll from " + Context.Message.Author.Mention + ": " + String.Join(' ', question));
+            await message.AddReactionsAsync(new[] { new Emoji("👍"), new Emoji("😐"), new Emoji("👎") });
         }
     }
 }
