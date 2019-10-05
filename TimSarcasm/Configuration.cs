@@ -28,7 +28,7 @@ namespace TimSarcasm
         [JsonProperty("spamRole")]
         public ulong SpamRoleId { get; set; }
 
-        [JsonProperty("logChannel")]
+        [JsonProperty("modLogChannel")]
         public ulong ModLogChannelId { get; set; }
 
     }
