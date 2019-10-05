@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 namespace TimSarcasm.Modules
 {
+    [Name("Poll"), Summary("Creates polls.")]
     public class PollModule : ModuleBase<SocketCommandContext>
     {
         [Command("poll")]

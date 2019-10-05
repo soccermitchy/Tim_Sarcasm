@@ -1,5 +1,6 @@
 using Discord;
 using Discord.WebSocket;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -34,7 +35,10 @@ namespace TimSarcasm
             await _client.StartAsync();
             _client.UserVoiceStateUpdated += UserVoiceStateUpdated;
             var handler = new CommandHandler(_client, new Discord.Commands.CommandService());
-            await handler.InstallCommandsAsync();
+            var services = new ServiceCollection()
+                .AddSingleton(handler)
+                .BuildServiceProvider();
+            await handler.InstallCommandsAsync(services);
             await Task.Delay(-1);   
         }
 

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace TimSarcasm.Modules
 {
-
+    [Name("Emoji"), Summary("Emoji commands.")]
     public class EmojiCommandsModule : ModuleBase<SocketCommandContext>
     {
         [Command("b")]
