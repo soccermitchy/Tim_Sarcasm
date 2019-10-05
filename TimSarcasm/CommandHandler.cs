@@ -41,8 +41,8 @@ namespace TimSarcasm
                 context: context,
                 argPos: argPos,
                 services: Services);
-            if (!result.IsSuccess)
-                await message.Channel.SendMessageAsync("Error: " + result.ErrorReason);
+            //if (!result.IsSuccess)
+            //    await message.Channel.SendMessageAsync("Error: " + result.ErrorReason);
         }
     }
 }
