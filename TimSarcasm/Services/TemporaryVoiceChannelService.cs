@@ -9,11 +9,16 @@ namespace TimSarcasm.Services
 {
     public class TemporaryVoiceChannelService : ServiceEventManager
     {
-        private Dictionary<SocketGuildUser, long> spamProtectionDictionary = new Dictionary<SocketGuildUser, long>();
-        private Dictionary<SocketGuildUser, int> spamProtectionCountDictionary = new Dictionary<SocketGuildUser, int>();
-        public TemporaryVoiceChannelService(DiscordSocketClient client)
+        private Configuration Config { get; set; }
+        private LogService Logger { get; set; }
+        private readonly Dictionary<SocketGuildUser, long> spamProtectionDictionary = new Dictionary<SocketGuildUser, long>();
+        private readonly Dictionary<SocketGuildUser, int> spamProtectionCountDictionary = new Dictionary<SocketGuildUser, int>();
+
+        public TemporaryVoiceChannelService(DiscordSocketClient client, ConfigurationService config, LogService logger)
         {
             Client = client;
+            Config = config.Config;
+            Logger = logger;
         }
         public void Enable()
         {
@@ -37,7 +42,7 @@ namespace TimSarcasm.Services
             if (guildUser == null) return;
             var name = !(string.IsNullOrEmpty(guildUser.Nickname)) ? guildUser.Nickname : user.Username;
 
-            if (after.VoiceChannel != null && after.VoiceChannel.Id == Program.Config.CreateVoiceChannelId)
+            if (after.VoiceChannel != null && after.VoiceChannel.Id == Config.CreateVoiceChannelId)
             {
                 if (spamProtectionDictionary.ContainsKey(guildUser))
                 {
@@ -45,9 +50,9 @@ namespace TimSarcasm.Services
                     {
                         if (DateTimeOffset.Now.ToUnixTimeSeconds() - spamProtectionDictionary[guildUser] < 60)
                         {
-                            await guildUser.AddRoleAsync(guild.GetRole(Program.Config.SpamRoleId));
-                            await Program.Log(new LogMessage(LogSeverity.Warning, "ChannelMaker", "Giving spamrole to " + name + " for spamming VC creation"));
-                            var logChannel = Client.GetChannel(Program.Config.ModLogChannelId) as ITextChannel;
+                            await guildUser.AddRoleAsync(guild.GetRole(Config.SpamRoleId));
+                            await Logger.Log(new LogMessage(LogSeverity.Warning, "ChannelMaker", "Giving spamrole to " + name + " for spamming VC creation"));
+                            var logChannel = Client.GetChannel(Config.ModLogChannelId) as ITextChannel;
                             await logChannel.SendMessageAsync(guildUser.Mention + " was spamming VC creation, giving spam role.");
                             await RemoveOldVc(before);
                             await guildUser.ModifyAsync(vcUser => { vcUser.Channel = null; });
@@ -68,10 +73,10 @@ namespace TimSarcasm.Services
                 }
 
 
-                await Program.Log(new LogMessage(LogSeverity.Info, "ChannelMaker", "Creating VC for " + name));
+                await Logger.Log(new LogMessage(LogSeverity.Info, "ChannelMaker", "Creating VC for " + name));
                 var newVoiceChannel = await after.VoiceChannel.Guild.CreateVoiceChannelAsync(name + "'s Voice Chat", (properties) =>
                 {
-                    properties.CategoryId = Program.Config.VoiceChannelCategory;
+                    properties.CategoryId = Config.VoiceChannelCategory;
                 });
                 await guildUser.ModifyAsync(vcUser =>
                 {
@@ -86,8 +91,8 @@ namespace TimSarcasm.Services
         {
             if (before.VoiceChannel != null &&
                 before.VoiceChannel.Users.Count == 0 &&
-                before.VoiceChannel.CategoryId == Program.Config.VoiceChannelCategory &&
-                before.VoiceChannel.Id != Program.Config.CreateVoiceChannelId)
+                before.VoiceChannel.CategoryId == Config.VoiceChannelCategory &&
+                before.VoiceChannel.Id != Config.CreateVoiceChannelId)
             {
                 await before.VoiceChannel.DeleteAsync();
             }

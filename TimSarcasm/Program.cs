@@ -12,17 +12,7 @@ namespace TimSarcasm
 {
     class Program
     {
-        // TODO: Move (most) config values to a database
-        public static Configuration Config;
-        private DiscordSocketClient _client;
-
-
-        public Program(string[] args)
-        {
-            var configPath = args.Length > 0 ? args[1] : "config.json";
-            Config = Configuration.FromJson(File.ReadAllText(configPath));
-        }
-        static void Main(string[] args) => new Program(args).MainAsync().GetAwaiter().GetResult();
+        static void Main() => new Program().MainAsync().GetAwaiter().GetResult();
 
         public static Task Log(LogMessage msg)
         {
@@ -32,12 +22,6 @@ namespace TimSarcasm
 
         public async Task MainAsync()
         {
-            _client = new DiscordSocketClient();
-            _client.Log += Log;
-            await _client.LoginAsync(TokenType.Bot, Config.Token);
-            await _client.StartAsync();
-            //_client.UserVoiceStateUpdated += UserVoiceStateUpdated;
-
             IServiceCollection serviceCollection = new ServiceCollection();
             serviceCollection = ConfigureServices(serviceCollection);
             var services = serviceCollection.BuildServiceProvider();
@@ -49,7 +33,11 @@ namespace TimSarcasm
 
         public IServiceCollection ConfigureServices(IServiceCollection serviceCollection)
         {
-            serviceCollection.AddSingleton(_client);
+            //serviceCollection.AddSingleton(_client);
+            serviceCollection.AddSingleton<DiscordSocketClient>();
+            // TODO: maybe have this somehow automatically:tm: bind to w/e class needs it to show where logs are from
+            serviceCollection.AddSingleton<LogService>();
+            serviceCollection.AddSingleton<ConfigurationService>();
             serviceCollection.AddSingleton<CommandService>();
             serviceCollection.AddSingleton<CommandHandler>();
             serviceCollection.AddSingleton<TemporaryVoiceChannelService>();
@@ -57,6 +45,15 @@ namespace TimSarcasm
         }
         public async Task StartServices(IServiceProvider serviceProvider)
         {
+            var config = serviceProvider.GetRequiredService<ConfigurationService>().Config;
+            var logger = serviceProvider.GetRequiredService<LogService>();
+
+            // Discord client init
+            var client = serviceProvider.GetRequiredService<DiscordSocketClient>();
+            client.Log += logger.Log;
+            await client.LoginAsync(TokenType.Bot, config.Token);
+            await client.StartAsync();
+
             await serviceProvider.GetRequiredService<CommandHandler>().InstallCommandsAsync();
             serviceProvider.GetRequiredService<TemporaryVoiceChannelService>().Enable();
         }
