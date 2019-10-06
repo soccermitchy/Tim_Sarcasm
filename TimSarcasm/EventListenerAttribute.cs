@@ -7,7 +7,7 @@ namespace TimSarcasm
         UserVoiceStateUpdated
     }
 
-    [AttributeUsage(AttributeTargets.Method)]
+    [AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
     public class EventListenerAttribute : Attribute
     {
         public Event Event { get; private set; }

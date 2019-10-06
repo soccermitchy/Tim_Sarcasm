@@ -14,16 +14,15 @@ namespace TimSarcasm
     {
         private readonly DiscordSocketClient _client;
         public readonly CommandService Commands;
-        private ServiceProvider Services;
-        public CommandHandler(DiscordSocketClient client, CommandService commands)
+        private IServiceProvider Services;
+        public CommandHandler(DiscordSocketClient client, CommandService commands, IServiceProvider services)
         {
             Commands = commands;
             _client = client;
         }
 
-        public async Task InstallCommandsAsync(ServiceProvider services)
+        public async Task InstallCommandsAsync()
         {
-            Services = services;
             _client.MessageReceived += HandleCommandsAsync;
             await Commands.AddModulesAsync(assembly: Assembly.GetEntryAssembly(), services: Services);
         }

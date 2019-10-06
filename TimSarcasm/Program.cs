@@ -1,4 +1,5 @@
 using Discord;
+using Discord.Commands;
 using Discord.WebSocket;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -27,6 +28,7 @@ namespace TimSarcasm
             Console.WriteLine(msg.ToString());
             return Task.CompletedTask;
         }
+
         public async Task MainAsync()
         {
             _client = new DiscordSocketClient();
@@ -34,14 +36,23 @@ namespace TimSarcasm
             await _client.LoginAsync(TokenType.Bot, Config.Token);
             await _client.StartAsync();
             _client.UserVoiceStateUpdated += UserVoiceStateUpdated;
-            var handler = new CommandHandler(_client, new Discord.Commands.CommandService());
-            var services = new ServiceCollection()
-                .AddSingleton(handler)
-                .BuildServiceProvider();
-            await handler.InstallCommandsAsync(services);
+
+            IServiceCollection serviceCollection = new ServiceCollection();
+            serviceCollection = ConfigureServices(serviceCollection);
+            var services = serviceCollection.BuildServiceProvider();
+
+            await services.GetRequiredService<CommandHandler>().InstallCommandsAsync();
+
             await Task.Delay(-1);   
         }
 
+        public IServiceCollection ConfigureServices(IServiceCollection serviceCollection)
+        {
+            serviceCollection.AddSingleton(_client);
+            serviceCollection.AddSingleton<CommandService>();
+            serviceCollection.AddSingleton<CommandHandler>();
+            return serviceCollection;
+        }
 
 
         private async Task UserVoiceStateUpdated(SocketUser user, SocketVoiceState before, SocketVoiceState after)
