@@ -31,6 +31,12 @@ namespace TimSarcasm
         [JsonProperty("modLogChannel")]
         public ulong ModLogChannelId { get; set; }
 
+        [JsonProperty("databaseType")]
+        public string DatabaseType { get; set; }
+
+        [JsonProperty("databaseConnectionString")]
+        public string DatabaseConnectionString { get; set; }
+
     }
 
     public partial class Configuration

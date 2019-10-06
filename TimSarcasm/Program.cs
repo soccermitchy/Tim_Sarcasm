@@ -12,6 +12,7 @@ namespace TimSarcasm
 {
     class Program
     {
+        //this line crashes:
         static void Main() => new Program().MainAsync().GetAwaiter().GetResult();
 
         public static Task Log(LogMessage msg)
@@ -41,6 +42,7 @@ namespace TimSarcasm
             serviceCollection.AddSingleton<CommandService>();
             serviceCollection.AddSingleton<CommandHandler>();
             serviceCollection.AddSingleton<TemporaryVoiceChannelService>();
+            serviceCollection.AddSingleton<DatabaseService>();
             return serviceCollection;
         }
         public async Task StartServices(IServiceProvider serviceProvider)
@@ -53,6 +55,10 @@ namespace TimSarcasm
             client.Log += logger.Log;
             await client.LoginAsync(TokenType.Bot, config.Token);
             await client.StartAsync();
+
+            // Database init
+            var dbContext = serviceProvider.GetRequiredService<DatabaseService>();
+            dbContext.Configure(config.DatabaseType, config.DatabaseConnectionString);
 
             await serviceProvider.GetRequiredService<CommandHandler>().InstallCommandsAsync();
             serviceProvider.GetRequiredService<TemporaryVoiceChannelService>().Enable();
