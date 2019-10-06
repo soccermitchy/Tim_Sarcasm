@@ -19,6 +19,7 @@ namespace TimSarcasm
         {
             Commands = commands;
             _client = client;
+            Services = services;
         }
 
         public async Task InstallCommandsAsync()
