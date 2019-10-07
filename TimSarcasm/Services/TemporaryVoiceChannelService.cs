@@ -3,6 +3,7 @@ using Discord.WebSocket;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Linq;
 using System.Threading.Tasks;
 using TimSarcasm.Models;
 
@@ -44,6 +45,7 @@ namespace TimSarcasm.Services
             if (guildUser == null) return;
             var name = !(string.IsNullOrEmpty(guildUser.Nickname)) ? guildUser.Nickname : user.Username;
 
+            //If the vc they switched to is a "create vc" one
             if (after.VoiceChannel != null && after.VoiceChannel.Id == serverProperties.TempVoiceCreateChannelId)
             {
                 if (spamProtectionDictionary.ContainsKey(guildUser))
@@ -86,7 +88,23 @@ namespace TimSarcasm.Services
                 });
             }
 
+            await RenameVcIfCreatorLeft(before, serverProperties, user, guildUser);
             await RemoveOldVc(before, serverProperties);
+        }
+
+        private async Task RenameVcIfCreatorLeft(SocketVoiceState vc, ServerProperties serverProperties, SocketUser user, IGuildUser guildUser)
+        {
+            string name = !(string.IsNullOrEmpty(guildUser.Nickname)) ? guildUser.Nickname : user.Username;
+            if (vc.VoiceChannel != null &&
+                vc.VoiceChannel.Users.Count != 0 &&
+                vc.VoiceChannel.CategoryId == serverProperties.TempVoiceCategoryId &&
+                vc.VoiceChannel.Id != serverProperties.TempVoiceCreateChannelId &&
+                vc.VoiceChannel.Name == (name + "'s Voice Chat"))
+            {
+                var newOwner = vc.VoiceChannel.Users.First();
+                var newName = !(string.IsNullOrEmpty(newOwner.Nickname)) ? newOwner.Nickname : newOwner.Username;
+                await vc.VoiceChannel.ModifyAsync(vc => vc.Name = newName + "'s Voice Chat");
+            }
         }
 
         private async Task RemoveOldVc(SocketVoiceState vc, ServerProperties serverProperties)
