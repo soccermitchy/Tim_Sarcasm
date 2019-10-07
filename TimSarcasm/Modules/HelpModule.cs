@@ -39,7 +39,7 @@ namespace TimSarcasm.Modules
             }
             var eb = new EmbedBuilder()
                 .WithTitle("Commands in module: " + moduleName)
-                .WithDescription("To get help on a command, do `help command " + moduleName + " <commandname>`\n")
+                .WithDescription("To get help on a command, do `help command <commandname>`\n")
                 .WithColor(0, 0, 255);
 
             foreach (var module in matchingModules)
