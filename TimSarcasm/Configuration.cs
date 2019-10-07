@@ -20,17 +20,6 @@ namespace TimSarcasm
         [JsonProperty("token")]
         public string Token { get; set; }
 
-        [JsonProperty("createVoiceChannelId")]
-        public ulong CreateVoiceChannelId { get; set; }
-        [JsonProperty("voiceChannelCategory")]
-        public ulong VoiceChannelCategory { get; set; }
-        
-        [JsonProperty("spamRole")]
-        public ulong SpamRoleId { get; set; }
-
-        [JsonProperty("modLogChannel")]
-        public ulong ModLogChannelId { get; set; }
-
         [JsonProperty("databaseType")]
         public string DatabaseType { get; set; }
 
