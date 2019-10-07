@@ -43,6 +43,7 @@ namespace TimSarcasm
             serviceCollection.AddSingleton<CommandHandler>();
             serviceCollection.AddSingleton<TemporaryVoiceChannelService>();
             serviceCollection.AddSingleton<DatabaseService>();
+            serviceCollection.AddSingleton<ServerPropertiesService>();
             return serviceCollection;
         }
         public async Task StartServices(IServiceProvider serviceProvider)

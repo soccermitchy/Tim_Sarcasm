@@ -4,20 +4,21 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using TimSarcasm.Models;
 
 namespace TimSarcasm.Services
 {
     public class TemporaryVoiceChannelService : ServiceEventManager
     {
-        private Configuration Config { get; set; }
+        private ServerPropertiesService SpService { get; set; }
         private LogService Logger { get; set; }
         private readonly Dictionary<SocketGuildUser, long> spamProtectionDictionary = new Dictionary<SocketGuildUser, long>();
         private readonly Dictionary<SocketGuildUser, int> spamProtectionCountDictionary = new Dictionary<SocketGuildUser, int>();
 
-        public TemporaryVoiceChannelService(DiscordSocketClient client, ConfigurationService config, LogService logger)
+        public TemporaryVoiceChannelService(DiscordSocketClient client, ServerPropertiesService spService, LogService logger)
         {
             Client = client;
-            Config = config.Config;
+            SpService = spService;
             Logger = logger;
         }
         public void Enable()
@@ -37,12 +38,13 @@ namespace TimSarcasm.Services
             {
                 guild = before.VoiceChannel.Guild;
             }
+            var serverProperties = SpService.GetProperties(guild.Id);
 
             var guildUser = guild.GetUser(user.Id);
             if (guildUser == null) return;
             var name = !(string.IsNullOrEmpty(guildUser.Nickname)) ? guildUser.Nickname : user.Username;
 
-            if (after.VoiceChannel != null && after.VoiceChannel.Id == Config.CreateVoiceChannelId)
+            if (after.VoiceChannel != null && after.VoiceChannel.Id == serverProperties.TempVoiceCreateChannelId)
             {
                 if (spamProtectionDictionary.ContainsKey(guildUser))
                 {
@@ -50,11 +52,11 @@ namespace TimSarcasm.Services
                     {
                         if (DateTimeOffset.Now.ToUnixTimeSeconds() - spamProtectionDictionary[guildUser] < 60)
                         {
-                            await guildUser.AddRoleAsync(guild.GetRole(Config.SpamRoleId));
+                            await guildUser.AddRoleAsync(guild.GetRole(serverProperties.SpamRoleId));
                             await Logger.Log(new LogMessage(LogSeverity.Warning, "ChannelMaker", "Giving spamrole to " + name + " for spamming VC creation"));
-                            var logChannel = Client.GetChannel(Config.ModLogChannelId) as ITextChannel;
+                            var logChannel = Client.GetChannel(serverProperties.LogChannelId) as ITextChannel;
                             await logChannel.SendMessageAsync(guildUser.Mention + " was spamming VC creation, giving spam role.");
-                            await RemoveOldVc(before);
+                            await RemoveOldVc(before, serverProperties);
                             await guildUser.ModifyAsync(vcUser => { vcUser.Channel = null; });
                             return;
                         }
@@ -76,7 +78,7 @@ namespace TimSarcasm.Services
                 await Logger.Log(new LogMessage(LogSeverity.Info, "ChannelMaker", "Creating VC for " + name));
                 var newVoiceChannel = await after.VoiceChannel.Guild.CreateVoiceChannelAsync(name + "'s Voice Chat", (properties) =>
                 {
-                    properties.CategoryId = Config.VoiceChannelCategory;
+                    properties.CategoryId = serverProperties.TempVoiceCategoryId;
                 });
                 await guildUser.ModifyAsync(vcUser =>
                 {
@@ -84,17 +86,17 @@ namespace TimSarcasm.Services
                 });
             }
 
-            await RemoveOldVc(before);
+            await RemoveOldVc(before, serverProperties);
         }
 
-        private async Task RemoveOldVc(SocketVoiceState before)
+        private async Task RemoveOldVc(SocketVoiceState vc, ServerProperties serverProperties)
         {
-            if (before.VoiceChannel != null &&
-                before.VoiceChannel.Users.Count == 0 &&
-                before.VoiceChannel.CategoryId == Config.VoiceChannelCategory &&
-                before.VoiceChannel.Id != Config.CreateVoiceChannelId)
+            if (vc.VoiceChannel != null &&
+                vc.VoiceChannel.Users.Count == 0 &&
+                vc.VoiceChannel.CategoryId == serverProperties.TempVoiceCategoryId &&
+                vc.VoiceChannel.Id != serverProperties.TempVoiceCreateChannelId)
             {
-                await before.VoiceChannel.DeleteAsync();
+                await vc.VoiceChannel.DeleteAsync();
             }
         }
     }

@@ -29,7 +29,7 @@ namespace TimSarcasm.Modules
         [Command("version"), Summary("See the current version of the database")]
         public async Task Version()
         {
-            var version = DbService.Database.GetMigrations().Last();
+            var version = DbService.Database.GetAppliedMigrations().Last();
             await Context.Channel.SendMessageAsync("Last migration was " + version);
         }
     }

@@ -8,10 +8,10 @@ namespace TimSarcasm.Models
     public class ServerProperties
     {
         [Key]
-        public uint ServerId { get; set; }
-        public uint LogChannelId { get; set; }
-        public uint SpamRoleId { get; set; }
-        public uint TempVoiceCategoryId { get; set; }
-        public uint TempVoiceCreateChannelId { get; set; }
+        public ulong ServerId { get; set; }
+        public ulong LogChannelId { get; set; }
+        public ulong SpamRoleId { get; set; }
+        public ulong TempVoiceCategoryId { get; set; }
+        public ulong TempVoiceCreateChannelId { get; set; }
     }
 }
