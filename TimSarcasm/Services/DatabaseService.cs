@@ -52,7 +52,10 @@ namespace TimSarcasm.Services
             DatabaseConfigString = configurationString;
         }
         public DbSet<ServerProperties> ServerProperties { get; set; }
-
+        public DbSet<User> Users { get; set; }
+        public DbSet<PermissionEntry> PermissionEntries { get; set; }
+        public DbSet<PermissionsGroup> PermissionGroups { get; set; }
+        public DbSet<PermissionsGroupUser> PermissionsGroupUsers { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder options)
         {
