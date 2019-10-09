@@ -7,6 +7,7 @@ using TimSarcasm.Services;
 using Discord;
 using Discord.WebSocket;
 using System.Threading;
+using System.Linq;
 
 namespace TimSarcasm.Modules
 {
@@ -19,24 +20,12 @@ namespace TimSarcasm.Modules
         [RequireUserPermission(Discord.GuildPermission.ManageMessages)]
         public async Task Purge(int amount)
         {
-            var messages = await Context.Channel.GetMessagesAsync(amount+1).FlattenAsync();
-
-            var messageNum = 0;
-            foreach (var message in messages)
-            {
-                messageNum++;
-                if (!message.IsPinned)
-                    await message.DeleteAsync();
-                if (messageNum == 10)
-                {
-                    messageNum = 0;
-                    Thread.Sleep(1000);
-                }
-            }
+            var messages = (await Context.Channel.GetMessagesAsync(amount+1).FlattenAsync()).Where(msg => msg.IsPinned == false);
+            await (Context.Channel as ITextChannel).DeleteMessagesAsync(messages);
             var logChannel = Context.Guild.GetTextChannel(SpService.GetProperties(Context.Guild.Id).LogChannelId);
             if (logChannel != null)
-                await logChannel.SendMessageAsync(Context.Message.Author.Mention + " has just purged " + amount + " messages from " + (Context.Channel as SocketTextChannel).Mention);
+                await logChannel.SendMessageAsync(Context.Message.Author.Mention + " has just purged " + messages.Count() + " messages from " + (Context.Channel as SocketTextChannel).Mention);
             await Context.Channel.SendMessageAsync("Done.");
-        }   
+        }
     }
 }
