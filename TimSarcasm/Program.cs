@@ -44,6 +44,7 @@ namespace TimSarcasm
             serviceCollection.AddSingleton<TemporaryVoiceChannelService>();
             serviceCollection.AddSingleton<DatabaseService>();
             serviceCollection.AddSingleton<ServerPropertiesService>();
+            serviceCollection.AddSingleton<MessageLogService>();
             return serviceCollection;
         }
         public async Task StartServices(IServiceProvider serviceProvider)
@@ -62,6 +63,7 @@ namespace TimSarcasm
             dbContext.Configure(config.DatabaseType, config.DatabaseConnectionString);
 
             await serviceProvider.GetRequiredService<CommandHandler>().InstallCommandsAsync();
+            serviceProvider.GetRequiredService<MessageLogService>().Enable();
             serviceProvider.GetRequiredService<TemporaryVoiceChannelService>().Enable();
         }
     }

@@ -4,7 +4,9 @@ namespace TimSarcasm
 {
     public enum Event
     {
-        UserVoiceStateUpdated
+        UserVoiceStateUpdated,
+        MessageReceived,
+        MessageUpdated
     }
 
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]

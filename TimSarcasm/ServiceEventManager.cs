@@ -21,6 +21,12 @@ namespace TimSarcasm
                     case Event.UserVoiceStateUpdated:
                         Client.UserVoiceStateUpdated += (user, before, after) => method.Invoke(this, new object[] { user, before, after }) as Task;
                         break;
+                    case Event.MessageReceived:
+                        Client.MessageReceived += (message) => method.Invoke(this, new object[] { message }) as Task;
+                        break;
+                    case Event.MessageUpdated:
+                        Client.MessageUpdated += (cachedMessage, message, channel) => method.Invoke(this, new object[] { cachedMessage, message, channel }) as Task;
+                        break; 
                 }
             }
         }
