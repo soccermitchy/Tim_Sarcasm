@@ -7,7 +7,7 @@ namespace TimSarcasm.Models
     public class PermissionsGroupUser
     {
         public ulong Id { get; set; }
-        public PermissionsGroup Group { get; set; }
-        public User User { get; set; }
+        public virtual PermissionsGroup Group { get; set; }
+        public virtual User User { get; set; }
     }
 }

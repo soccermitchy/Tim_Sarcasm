@@ -10,6 +10,6 @@ namespace TimSarcasm.Models
         /// Discord user ID
         /// </summary>
         public ulong Id { get; set; }
-        public List<PermissionsGroupUser> Groups { get; set; }
+        public virtual List<PermissionsGroupUser> Groups { get; set; }
     }
 }

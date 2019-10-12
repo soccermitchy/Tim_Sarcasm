@@ -6,10 +6,10 @@ namespace TimSarcasm.Models
 {
     public class LoggedMessageAttachment
     {
-        public ulong Id { get; set; } 
+        public ulong Id { get; set; }
 
         public ulong MessageId { get; set; }
-        public LoggedMessage Message { get; set; }
+        public virtual LoggedMessage Message { get; set; }
 
         public string Url { get; set; }
     }

@@ -8,6 +8,8 @@ namespace TimSarcasm.Models
     {
         public ulong Id { get; set; }
         public string Permission { get; set; }
-        public PermissionsGroup ParentGroup { get; set; }
+        public virtual PermissionsGroup ParentGroup { get; set; }
+        public int Priority { get; set; }
+        public bool Value { get; set; }
     }
 }

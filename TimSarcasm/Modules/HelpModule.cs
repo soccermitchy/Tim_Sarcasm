@@ -31,7 +31,7 @@ namespace TimSarcasm.Modules
         [Command("module"), Summary("List commands in a module")]
         public async Task ModuleCommandList(string moduleName = "help")
         {
-            var matchingModules = CommandHandler.Commands.Modules.Where(m => m.Name.ToLower() == moduleName.ToLower());
+            var matchingModules = CommandHandler.Commands.Modules.Where(m => string.Equals(m.Name, moduleName, StringComparison.OrdinalIgnoreCase));
             if (matchingModules.Count() == 0)
             {
                 await Context.Channel.SendMessageAsync("No modules with that name found!");

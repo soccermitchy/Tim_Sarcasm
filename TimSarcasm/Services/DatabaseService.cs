@@ -63,6 +63,7 @@ namespace TimSarcasm.Services
         {
             if (Logger != null)
                 Logger.Log(new LogMessage(LogSeverity.Info, "DatabaseService", "Connecting to database"));
+            options = options.UseLazyLoadingProxies();
             switch (DatabaseType)
             {
                 case DatabaseType.SQLite:
@@ -75,6 +76,19 @@ namespace TimSarcasm.Services
                     options.UseMySql(DatabaseConfigString);
                     break;
             }
+        }
+
+        protected override void OnModelCreating(ModelBuilder builder)
+        {
+            builder.Entity<PermissionsGroupUser>()
+                .HasOne(pgu => pgu.User)
+                .WithMany(user => user.Groups);
+            builder.Entity<PermissionsGroupUser>()
+                .HasOne(pgu => pgu.Group)
+                .WithMany(group => group.Users);
+            builder.Entity<PermissionsGroup>()
+                .HasMany(pg => pg.Permissions)
+                .WithOne(pe => pe.ParentGroup);
         }
     }
 }
