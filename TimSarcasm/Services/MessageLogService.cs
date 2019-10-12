@@ -34,10 +34,31 @@ namespace TimSarcasm.Services
                 Message = message.Content,
                 Timestamp = message.Timestamp.DateTime
             };
+            LogAttachments(message, loggedMessage);
+
             if (message.Channel is SocketGuildChannel)
                 loggedMessage.ServerId = (message.Channel as SocketGuildChannel).Guild.Id;
             DbService.LoggedMessages.Add(loggedMessage);
             await DbService.SaveChangesAsync();
+        }
+
+        private void LogAttachments(SocketMessage message, LoggedMessage loggedMessage)
+        {
+            if (message.Attachments.Any())
+            {
+                foreach (var attachment in message.Attachments)
+                {
+                    if (DbService.LoggedMessageAttachments.Any(att => att.Id == attachment.Id)) continue;
+                    var loggedAttachment = new LoggedMessageAttachment()
+                    {
+                        Id = attachment.Id,
+                        MessageId = loggedMessage.MessageId,
+                        Message = loggedMessage,
+                        Url = attachment.Url
+                    };
+                    DbService.LoggedMessageAttachments.Add(loggedAttachment);
+                }
+            }
         }
 
         [EventListener(Event.MessageUpdated)]
@@ -48,6 +69,7 @@ namespace TimSarcasm.Services
             var loggedMessage = loggedMessages.First();
             loggedMessage.Message = message.Content;
             loggedMessage.EditTimestamp = message.EditedTimestamp.HasValue ? message.EditedTimestamp.Value.DateTime : DateTime.Now;
+            LogAttachments(message, loggedMessage);
             DbService.LoggedMessages.Update(loggedMessage);
             await DbService.SaveChangesAsync();
         }

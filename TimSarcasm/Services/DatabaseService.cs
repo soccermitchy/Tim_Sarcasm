@@ -57,6 +57,7 @@ namespace TimSarcasm.Services
         public DbSet<PermissionsGroup> PermissionGroups { get; set; }
         public DbSet<PermissionsGroupUser> PermissionsGroupUsers { get; set; }
         public DbSet<LoggedMessage> LoggedMessages { get; set; }
+        public DbSet<LoggedMessageAttachment> LoggedMessageAttachments { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder options)
         {

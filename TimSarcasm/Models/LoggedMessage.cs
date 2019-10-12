@@ -15,5 +15,7 @@ namespace TimSarcasm.Models
         public string Message { get; set; }
         public DateTime Timestamp { get; set; }
         public DateTime EditTimestamp { get; set; }
+
+        public List<LoggedMessageAttachment> Attachments { get; set; }
     }
 }
