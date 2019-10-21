@@ -7,6 +7,8 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using TimSarcasm.Models;
+using TimSarcasm.Util;
 
 namespace TimSarcasm
 {
@@ -14,7 +16,8 @@ namespace TimSarcasm
     {
         private readonly DiscordSocketClient _client;
         public readonly CommandService Commands;
-        private IServiceProvider Services;
+        private readonly IServiceProvider Services;
+
         public CommandHandler(DiscordSocketClient client, CommandService commands, IServiceProvider services)
         {
             Commands = commands;
@@ -25,8 +28,10 @@ namespace TimSarcasm
         public async Task InstallCommandsAsync()
         {
             _client.MessageReceived += HandleCommandsAsync;
+            Commands.AddTypeReader<PermissionsGroup>(new PermissionsGroupTypeReader());
             await Commands.AddModulesAsync(assembly: Assembly.GetEntryAssembly(), services: Services);
         }
+
         private async Task HandleCommandsAsync(SocketMessage messageParam)
         {
             if (!(messageParam is SocketUserMessage message)) return;
@@ -43,8 +48,6 @@ namespace TimSarcasm
                 services: Services);
             if (!result.IsSuccess && result.Error != CommandError.UnknownCommand)
                 await message.Channel.SendMessageAsync("Error: " + result.ErrorReason);
-            //if (!result.IsSuccess)
-            //    await message.Channel.SendMessageAsync("Error: " + result.ErrorReason);
         }
     }
 }

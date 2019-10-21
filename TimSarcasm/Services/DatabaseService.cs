@@ -21,7 +21,7 @@ namespace TimSarcasm.Services
 
         public DatabaseService(LogService logger)
         {
-            this.Logger = logger;
+            Logger = logger;
         }
         // Used for EF cli tools
         public DatabaseService()
@@ -30,11 +30,12 @@ namespace TimSarcasm.Services
 
             Configure(config.Config.DatabaseType, config.Config.DatabaseConnectionString);
         }
+
         public void Configure(string databaseType, string configurationString)
         {
-            if (Logger != null)
-                Logger.Log(new LogMessage(LogSeverity.Info, "DatabaseService",
+            Logger?.Log(new LogMessage(LogSeverity.Info, "DatabaseService",
                     "Configuring " + databaseType + " database with \"" + configurationString + "\""));
+
             switch (databaseType.ToLower())
             {
                 case "sqlite":

@@ -32,7 +32,7 @@ namespace TimSarcasm.Modules
         public async Task ModuleCommandList(string moduleName = "help")
         {
             var matchingModules = CommandHandler.Commands.Modules.Where(m => string.Equals(m.Name, moduleName, StringComparison.OrdinalIgnoreCase));
-            if (matchingModules.Count() == 0)
+            if (!matchingModules.Any())
             {
                 await Context.Channel.SendMessageAsync("No modules with that name found!");
                 return;
@@ -41,13 +41,14 @@ namespace TimSarcasm.Modules
                 .WithTitle("Commands in module: " + moduleName)
                 .WithDescription("To get help on a command, do `help command <commandname>`\n")
                 .WithColor(0, 0, 255);
-
-            foreach (var module in matchingModules)
+            var module = matchingModules.First();
+            if (!String.IsNullOrEmpty(module.Remarks))
             {
-                foreach (var command in module.Commands)
-                {
-                    eb.WithDescription(eb.Description + "\n**" + command.Aliases.First() + "** - " + (command.Summary ?? "No summary for command."));
-                }
+                eb.WithDescription(module.Remarks + "\n\n" + eb.Description);
+            }
+            foreach (var command in module.Commands)
+            {
+                eb.WithDescription(eb.Description + "\n**" + command.Aliases[0] + "** - " + (command.Summary ?? "No summary for command."));
             }
             await Context.Channel.SendMessageAsync("", false, eb.Build());
         }
@@ -56,8 +57,8 @@ namespace TimSarcasm.Modules
         public async Task CommandInfo(params string[] commandName)
         {
             var joinedCommandName = string.Join(' ', commandName);
-            var matchingCommands = CommandHandler.Commands.Commands.Where(c => c.Aliases.First() == joinedCommandName);
-            if (matchingCommands.Count() == 0)
+            var matchingCommands = CommandHandler.Commands.Commands.Where(c => c.Aliases[0] == joinedCommandName);
+            if (!matchingCommands.Any())
             {
                 await Context.Channel.SendMessageAsync("No commands with that name were found in that module!");
                 return;

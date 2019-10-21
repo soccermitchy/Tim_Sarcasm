@@ -45,8 +45,10 @@ namespace TimSarcasm
             serviceCollection.AddSingleton<DatabaseService>();
             serviceCollection.AddSingleton<ServerPropertiesService>();
             serviceCollection.AddSingleton<MessageLogService>();
+            serviceCollection.AddSingleton<PermissionService>();
             return serviceCollection;
         }
+
         public async Task StartServices(IServiceProvider serviceProvider)
         {
             var config = serviceProvider.GetRequiredService<ConfigurationService>().Config;
