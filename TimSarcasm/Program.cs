@@ -45,6 +45,7 @@ namespace TimSarcasm
             serviceCollection.AddSingleton<DatabaseService>();
             serviceCollection.AddSingleton<ServerPropertiesService>();
             serviceCollection.AddSingleton<MessageLogService>();
+            serviceCollection.AddSingleton<ScreamingAsAService>();
             return serviceCollection;
         }
         public async Task StartServices(IServiceProvider serviceProvider)
@@ -65,6 +66,7 @@ namespace TimSarcasm
             await serviceProvider.GetRequiredService<CommandHandler>().InstallCommandsAsync();
             serviceProvider.GetRequiredService<MessageLogService>().Enable();
             serviceProvider.GetRequiredService<TemporaryVoiceChannelService>().Enable();
+            serviceProvider.GetRequiredService<ScreamingAsAService>().Enable();
         }
     }
 }

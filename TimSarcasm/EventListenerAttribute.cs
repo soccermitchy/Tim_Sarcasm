@@ -6,7 +6,8 @@ namespace TimSarcasm
     {
         UserVoiceStateUpdated,
         MessageReceived,
-        MessageUpdated
+        MessageUpdated,
+        ChannelCreated
     }
 
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]

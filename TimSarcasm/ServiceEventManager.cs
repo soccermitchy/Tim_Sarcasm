@@ -26,7 +26,10 @@ namespace TimSarcasm
                         break;
                     case Event.MessageUpdated:
                         Client.MessageUpdated += (cachedMessage, message, channel) => method.Invoke(this, new object[] { cachedMessage, message, channel }) as Task;
-                        break; 
+                        break;
+                    case Event.ChannelCreated:
+                        Client.ChannelCreated += (channel) => method.Invoke(this, new object[] { channel }) as Task;
+                        break;
                 }
             }
         }

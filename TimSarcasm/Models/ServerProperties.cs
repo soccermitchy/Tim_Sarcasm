@@ -13,5 +13,8 @@ namespace TimSarcasm.Models
         public ulong SpamRoleId { get; set; }
         public ulong TempVoiceCategoryId { get; set; }
         public ulong TempVoiceCreateChannelId { get; set; }
+
+
+        public bool TempVoiceConfigured { get { return TempVoiceCategoryId != 0 && TempVoiceCreateChannelId != 0; } }
     }
 }
