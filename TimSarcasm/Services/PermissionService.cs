@@ -124,6 +124,7 @@ namespace TimSarcasm.Services
             await DbService.SaveChangesAsync().ConfigureAwait(false);
             return group;
         }
+
         public async Task DeleteGroup(PermissionsGroup group)
         {
             DbService.PermissionGroups.Remove(group);

@@ -59,6 +59,7 @@ namespace TimSarcasm.Modules
             SpService.UpdateProperties(props);
             await Context.Channel.SendMessageAsync("Set the log channel to " + channel.Mention);
         }
+
         [Command("SpamRole"), Summary("Gets or sets the spam role used for people who spam VC creation")]
         public async Task SpamRole(SocketRole role = null)
         {

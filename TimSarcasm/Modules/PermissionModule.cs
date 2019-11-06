@@ -89,9 +89,10 @@ namespace TimSarcasm.Modules
 
         [Command("ListGroups"),Summary("List groups for the current context")]
         [RequirePermission("permissions.listgroups", false)]
-        public async Task ListGroups()
+        public async Task ListGroups(PermissionsScope scope)
         {
-            await Context.Channel.SendMessageAsync("Test").ConfigureAwait(false);
+            
         }
+
     }
 }
