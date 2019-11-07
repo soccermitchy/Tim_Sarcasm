@@ -39,7 +39,7 @@ namespace TimSarcasm.Services
             if (serverProperties.TempVoiceConfigured)
             {
                 var random = new Random();
-                if (random.Next(0, 1000) == 1 || message.Content == "test")
+                if (random.Next(0, 1000) == 1 || message.Content == "hey tim start screaming")
                 {
                     await Logger.Log(new LogMessage(LogSeverity.Info, "SAAS", "time to start screaming"));
                     var myNickname = guildChannel.Guild.GetUser(Client.CurrentUser.Id).Nickname;
