@@ -88,20 +88,18 @@ namespace TimSarcasm.Services
                     {
                         await output.CopyToAsync(discord).ConfigureAwait(false);
                     }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine(ex.ToString());
-                    }
                     finally
                     {
                         await discord.FlushAsync().ConfigureAwait(false);
                     }
+                    await audioClient.StopAsync();
                 }
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.ToString());
             }
+            await Logger.Log(new LogMessage(LogSeverity.Info, "SAAS", "k i'm out"));
         }
 
         public async Task StartScreaming(string vcName, ulong guildId, ulong categoryId)
