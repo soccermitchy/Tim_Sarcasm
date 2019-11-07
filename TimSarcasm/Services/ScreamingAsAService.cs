@@ -58,34 +58,49 @@ namespace TimSarcasm.Services
             if (!_channelsToScreamIn.Contains(channel.Id)) return;
             _channelsToScreamIn.Remove(channel.Id);
             var voiceChannel = channel as SocketVoiceChannel;
-            var audioClient = await voiceChannel.ConnectAsync().ConfigureAwait(false);
+            Task.Run(() => CreateVc(voiceChannel)).GetAwaiter(); // .GetAwaiter() just to get rid of a warning
+        }
+
+        public async Task CreateVc(IVoiceChannel voiceChannel)
+        {
+            var audioClient = await voiceChannel.ConnectAsync();
             await Logger.Log(new LogMessage(LogSeverity.Info, "SAAS", "created and joined VC"));
-
-            var ffmpeg = Process.Start(new ProcessStartInfo
+            try
             {
-                FileName = "ffmpeg",
-                Arguments = $"-hide_banner -loglevel panic -i scream.mp3 -ac 2 -f s16le -ar 48000 pipe:1",
-                UseShellExecute = false,
-                RedirectStandardOutput = true
-            });
-            await Logger.Log(new LogMessage(LogSeverity.Info, "SAAS", "ffmpeg started"));
-            var output = ffmpeg.StandardOutput.BaseStream;
-            var discord = audioClient.CreatePCMStream(AudioApplication.Mixed);
+                var ffmpeg = Process.Start(new ProcessStartInfo
+                {
+                    FileName = "ffmpeg",
+                    Arguments = $"-hide_banner -loglevel panic -i scream.mp3 -ac 2 -f s16le -ar 48000 pipe:1",
+                    UseShellExecute = false,
+                    RedirectStandardOutput = true
+                });
+                await Logger.Log(new LogMessage(LogSeverity.Info, "SAAS", "ffmpeg started"));
+                var output = ffmpeg.StandardOutput.BaseStream;
+                var discord = audioClient.CreatePCMStream(AudioApplication.Mixed);
 
-            await Logger.Log(new LogMessage(LogSeverity.Info, "SAAS", "sending output"));
-            using (audioClient)
-            using (ffmpeg)
-            using (output)
-            using (discord)
+                await Logger.Log(new LogMessage(LogSeverity.Info, "SAAS", "sending output"));
+                using (audioClient)
+                using (ffmpeg)
+                using (output)
+                using (discord)
+                {
+                    try
+                    {
+                        await output.CopyToAsync(discord).ConfigureAwait(false);
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine(ex.ToString());
+                    }
+                    finally
+                    {
+                        await discord.FlushAsync().ConfigureAwait(false);
+                    }
+                }
+            }
+            catch (Exception ex)
             {
-                try
-                {
-                    await output.CopyToAsync(discord).ConfigureAwait(false);
-                }
-                finally
-                {
-                    await discord.FlushAsync().ConfigureAwait(false);
-                }
+                Console.WriteLine(ex.ToString());
             }
         }
 
